@@ -72,24 +72,26 @@ with open(STARTUPS_FILE, 'r') as csvfile:
 
 startups = sorted(startups)
 # nodes = copy.deepcopy(startups)
-nodes = [{'name': s, 'group': 1} for s in startups]
+nodes = [{'name': s, 'group': 1, 'weight': 0} for s in startups]
 
 with open(PERSONS_FILE, 'r') as csvfile:
     csvreader = csv.reader(csvfile)
     for i, row in enumerate(csvreader):
         handle, companies = row
-        nodes += [{'name': handle, 'group': 2}]
+        weight = 0
 
         for company in companies.split(','):
+            weight += 1
             company = normalize_company(company)
-            handle_index = len(nodes) - 1
+            handle_index = len(nodes)
+
             try:
                 company_index = index(startups, company)
                 edges += [{
                     'source':handle_index,
                     'target':company_index,
-                    'weight': 1
                 }]
+                # nodes[company_index]['weight'] += 1
 
             except ValueError:
                 print "Found a new startup: {company} with {handle} on row {row} (I won't autofix)".format(**{
@@ -102,10 +104,14 @@ with open(PERSONS_FILE, 'r') as csvfile:
                     'company': bm,
                     'score': bs
                 })
+        nodes += [{'name': handle, 'group': 2, 'weight': weight}]
+
 
 nodes_and_links = {
     'nodes': nodes,
     'links': edges
 }
+
+print nodes_and_links
 
 json.dump(nodes_and_links, open(STARTUPS_PERSONS_JSON_FILE, "w"))
