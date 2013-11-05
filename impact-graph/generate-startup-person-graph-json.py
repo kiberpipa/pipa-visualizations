@@ -65,12 +65,13 @@ def best_match(word, options):
 def normalize_company(company):
     return company.strip()
 
-with open(STARTUPS_FILE, 'r') as csvfile:
+with open(PERSONS_FILE, 'r') as csvfile:
     csvreader = csv.reader(csvfile)
     for row in csvreader:
-        startups += [row[0]]
+        for company in row[1].split(','):
+            startups.append(normalize_company(company))
 
-startups = sorted(startups)
+startups = sorted(set(startups))
 # nodes = copy.deepcopy(startups)
 nodes = [{'name': s, 'group': 1, 'weight': 0} for s in startups]
 
