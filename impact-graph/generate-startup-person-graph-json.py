@@ -68,6 +68,8 @@ def normalize_company(company):
 with open(PERSONS_FILE, 'r') as csvfile:
     csvreader = csv.reader(csvfile)
     for row in csvreader:
+        if len(row) < 2:
+            continue
         for company in row[1].split(','):
             startups.append(normalize_company(company))
 
@@ -78,6 +80,8 @@ nodes = [{'name': s, 'group': 1, 'weight': 0} for s in startups]
 with open(PERSONS_FILE, 'r') as csvfile:
     csvreader = csv.reader(csvfile)
     for i, row in enumerate(csvreader):
+        if len(row) != 2:
+            continue
         handle, companies = row
         weight = 0
 
