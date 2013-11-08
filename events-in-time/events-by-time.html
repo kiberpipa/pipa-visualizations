@@ -15,12 +15,36 @@
         color: white;
       }
 
+      .pot {
+        fill: red;
+      }
+
+      .intranet {
+        fill: green;
+      }
+
+      .delavnice {
+        fill: blue;
+      }
+
+      .filmsteka {
+        fill: yellow;
+      }
+
+      .square-hover {
+        fill: orange;
+      }
+
+      .no-group {
+        fill: pink;
+      }
+
     </style>
     <title>events</title>
 </head>
 <body>
 <div id='container'></div>
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+<script type="text/javascript" src="../jquery-1.6.2.min.js"></script>
 
 <script type="text/javascript" src="../d3/d3.v3.js"></script>
 
@@ -31,6 +55,13 @@
 var CONTAINER_WIDTH = 500,
     CONTAINER_HEIGHT = 500,
     PADDING = 0.5;
+
+var group_to_class = {
+  '1': 'pot',
+  '2': 'intranet',
+  '3': 'delavnice',
+  '4': 'filmsteka'
+}
 
 var width;
 var height;
@@ -67,12 +98,14 @@ d3.json('events.json', function(error, json) {
 
   for(var i=0;i<num_bins;i++) {
     for (var j=0; j<json[i][2].length;j++) {
+      // console.log(json[i][2][j]);
       data.push({
         x: box_width * i + (PADDING * i * 2),
         y: CONTAINER_HEIGHT - box_height * j - (PADDING * j * 2),
         width: box_width,
         height: box_height,
-        title: json[i][2][j][1]
+        title: json[i][2][j][1],
+        group: json[i][2][j][4]
       });
     }
   }
@@ -87,12 +120,30 @@ d3.json('events.json', function(error, json) {
                  .attr('y', function(d){return d.y;})
                  .attr('width', function(d){return d.width;})
                  .attr('height', function(d){return d.height;})
-                 .attr('fill', function(d){return 'red';})
-                 .on('mouseover', function(){
-                    d3.select(this).style('fill', 'blue');
+                 // .attr('fill', function(d){return 'red';})
+                 .attr('class', function(d){
+                  klass = group_to_class[d.group];
+                  if (klass != undefined) {
+                    return klass;
+                  } else {
+                    return 'no-group';
+                  }
+                 })
+                 .on('mouseover', function(d){
+                    klass = group_to_class[d.group];
+                    if (klass == undefined) {
+                      klass = 'no-group';
+                    }
+                    d3.select(this).classed(klass, false);
+                    d3.select(this).classed('square-hover', true);
                   })
-                 .on('mouseout', function(){
-                    d3.select(this).style('fill', 'red')
+                 .on('mouseout', function(d){
+                    d3.select(this).classed('square-hover', false);
+                    klass = group_to_class[d.group];
+                    if (klass == undefined) {
+                      klass = 'no-group';
+                    }
+                    d3.select(this).classed(klass, true);
                   })
                   .append("svg:title")
                  .text(function(d) { return d.title; })
