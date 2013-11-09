@@ -77,6 +77,9 @@ nodes = [{'name': s, 'group': 1, 'weight': 0} for s in startups]
 with open(PERSONS_FILE, 'r') as csvfile:
     csvreader = csv.reader(csvfile)
     for i, row in enumerate(csvreader):
+        if len(row) != 2:
+            continue
+
         handle, companies = row
         weight = 0
 

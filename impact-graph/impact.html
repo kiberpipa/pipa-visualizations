@@ -35,8 +35,8 @@ var svg = d3.select('body').append('svg')
                            .attr('height', height);
 
 var force = d3.layout.force()
-    .gravity(.05)
-    .charge(-1000)
+    .gravity(.1)
+    .charge(-200)
     .size([width, height]);
 
 d3.json('startups.json', function(error, json){
